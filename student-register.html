@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration | LearnHub</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        .register-page {
+            min-height: calc(100vh - 76px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            background: #f1f7ff;
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 480px;
+            padding: 35px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            box-shadow: 0 15px 45px rgba(37, 99, 235, 0.10);
+        }
+
+        .register-icon {
+            width: 62px;
+            height: 62px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            background: #dbeafe;
+            color: #2563eb;
+            border-radius: 15px;
+            font-size: 26px;
+        }
+
+        .register-card h1 {
+            text-align: center;
+            color: #0f172a;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .register-subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+        .register-submit {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .register-message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .register-message.error {
+            color: #b91c1c;
+        }
+
+        .register-message.success {
+            color: #15803d;
+        }
+
+        .register-bottom {
+            margin-top: 22px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .register-bottom a {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="index.html" class="logo">
+            Learn<span>Hub.</span>
+        </a>
+
+        <a href="index.html" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Home
+        </a>
+    </header>
+
+    <main class="register-page">
+        <section class="register-card">
+
+            <div class="register-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+
+            <h1>Create Account</h1>
+            <p class="register-subtitle">
+                Register to start your learning journey.
+            </p>
+
+            <form id="studentRegisterForm">
+
+                <div class="form-group">
+                    <label for="studentName">Full Name</label>
+                    <input
+                        type="text"
+                        id="studentName"
+                        name="studentName"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentEmail">Email Address</label>
+                    <input
+                        type="email"
+                        id="studentEmail"
+                        name="studentEmail"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="courseName">Choose Course</label>
+                    <select id="courseName" name="courseName" required>
+                        <option value="">Select a course</option>
+                        <option value="Java">Java</option>
+                        <option value="Python">Python</option>
+                        <option value="Full Stack Development">Full Stack Development</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Power BI">Power BI</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary register-submit"
+                        id="registerButton">
+                    Create Account
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <p id="registerMessage"
+                   class="register-message"
+                   role="status"
+                   aria-live="polite"></p>
+
+            </form>
+
+            <div class="register-bottom">
+                Already have an account?
+                <a href="student-login.html">Login here</a>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        const registerForm =
+            document.getElementById("studentRegisterForm");
+
+        const registerButton =
+            document.getElementById("registerButton");
+
+        const registerMessage =
+            document.getElementById("registerMessage");
+
+        registerForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const studentName =
+                document.getElementById("studentName").value.trim();
+
+            const studentEmail =
+                document.getElementById("studentEmail").value.trim();
+
+            const courseName =
+                document.getElementById("courseName").value;
+
+            const password =
+                document.getElementById("password").value;
+
+            registerButton.disabled = true;
+            registerButton.textContent = "Creating account...";
+            registerMessage.textContent = "";
+            registerMessage.className = "register-message";
+
+            try {
+                const response = await fetch(
+                    "http://localhost:8080/api/students/register",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            studentName: studentName,
+                            studentEmail: studentEmail,
+                            courseName: courseName,
+                            password: password
+                        })
+                    }
+                );
+
+                const result = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result || "Registration failed. Please try again."
+                    );
+                }
+
+                registerMessage.textContent =
+                    "Registration successful! Please log in.";
+
+                registerMessage.classList.add("success");
+                registerForm.reset();
+
+                setTimeout(() => {
+                    window.location.href = "student-login.html";
+                }, 1500);
+
+            } catch (error) {
+                console.error("Registration error:", error);
+
+                registerMessage.textContent =
+                    error.message.includes("Failed to fetch")
+                        ? "Cannot connect to the server. Please check Spring Boot."
+                        : error.message;
+
+                registerMessage.classList.add("error");
+
+            } finally {
+                registerButton.disabled = false;
+                registerButton.innerHTML =
+                    'Create Account <i class="fa-solid fa-arrow-right"></i>';
+            }
+        });
+    </script>
+
+</body>
+</html>

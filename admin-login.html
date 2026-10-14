@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | LearnHub</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        .admin-login-page {
+            min-height: calc(100vh - 76px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            background: #f1f7ff;
+        }
+
+        .admin-login-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 38px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            box-shadow: 0 15px 45px rgba(37, 99, 235, 0.10);
+        }
+
+        .admin-icon {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            border-radius: 16px;
+            background: #dbeafe;
+            color: #2563eb;
+            font-size: 27px;
+        }
+
+        .admin-login-card h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .admin-subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .admin-form-group {
+            margin-bottom: 18px;
+        }
+
+        .admin-form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .admin-form-group input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .admin-form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+        .admin-submit {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .admin-message {
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-message.error {
+            color: #b91c1c;
+        }
+
+        .admin-message.success {
+            color: #15803d;
+        }
+
+        .admin-bottom {
+            margin-top: 23px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .admin-bottom a {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        @media (max-width: 480px) {
+            .admin-login-card {
+                padding: 26px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="index.html" class="logo">Learn<span>Hub.</span></a>
+
+    <a href="index.html" class="btn btn-outline">
+        <i class="fa-solid fa-arrow-left"></i> Back to Home
+    </a>
+</header>
+
+<main class="admin-login-page">
+    <section class="admin-login-card">
+
+        <div class="admin-icon">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+
+        <h1>Admin Login</h1>
+        <p class="admin-subtitle">
+            Sign in to manage the LearnHub system.
+        </p>
+
+        <form id="adminLoginForm">
+
+            <div class="admin-form-group">
+                <label for="adminEmail">Admin Email</label>
+                <input
+                    type="email"
+                    id="adminEmail"
+                    placeholder="Enter admin email"
+                    autocomplete="username"
+                    required>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="adminPassword">Password</label>
+                <input
+                    type="password"
+                    id="adminPassword"
+                    placeholder="Enter admin password"
+                    autocomplete="current-password"
+                    required>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary admin-submit"
+                    id="adminLoginButton">
+                Login as Admin
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <p id="adminMessage"
+               class="admin-message"
+               role="status"
+               aria-live="polite"></p>
+
+        </form>
+
+        <div class="admin-bottom">
+            <a href="student-login.html">Student Login</a>
+        </div>
+
+    </section>
+</main>
+
+<script>
+    const adminLoginForm = document.getElementById("adminLoginForm");
+    const adminLoginButton = document.getElementById("adminLoginButton");
+    const adminMessage = document.getElementById("adminMessage");
+
+    adminLoginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const email = document.getElementById("adminEmail").value.trim();
+        const password = document.getElementById("adminPassword").value;
+
+        adminLoginButton.disabled = true;
+        adminLoginButton.textContent = "Logging in...";
+        adminMessage.textContent = "";
+        adminMessage.className = "admin-message";
+
+        try {
+            const response = await fetch(
+                "http://localhost:8080/api/admin/login",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                }
+            );
+
+            const result = await response.text();
+
+            if (!response.ok) {
+                throw new Error(result || "Invalid admin credentials.");
+            }
+
+            adminMessage.textContent = "Login successful! Opening dashboard...";
+            adminMessage.classList.add("success");
+
+            // Preserve the backend session cookie for protected API requests.
+            setTimeout(() => {
+                window.location.href = "admin-dashboard.html";
+            }, 700);
+
+        } catch (error) {
+            console.error("Admin login error:", error);
+
+            adminMessage.textContent =
+                error.message.includes("Failed to fetch")
+                    ? "Cannot connect to the server. Check Spring Boot and CORS settings."
+                    : error.message;
+
+            adminMessage.classList.add("error");
+
+        } finally {
+            adminLoginButton.disabled = false;
+            adminLoginButton.innerHTML =
+                'Login as Admin <i class="fa-solid fa-arrow-right"></i>';
+        }
+    });
+</script>
+
+</body>
+</html>

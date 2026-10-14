@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | LearnHub</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        .dashboard-page {
+            min-height: 80vh;
+            padding: 45px 5%;
+            background: #f8fafc;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 30px;
+            color: #0f172a;
+        }
+
+        .dashboard-header p {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+        }
+
+        .stat-card i {
+            color: #2563eb;
+            font-size: 23px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card h3 {
+            font-size: 25px;
+            color: #0f172a;
+        }
+
+        .stat-card p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .dashboard-section {
+            margin-bottom: 40px;
+        }
+
+        .dashboard-section h2 {
+            font-size: 23px;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+
+        .dashboard-course-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-course {
+            padding: 23px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+        }
+
+        .dashboard-course .course-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #2563eb;
+            background: #dbeafe;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .dashboard-course h3 {
+            margin-bottom: 8px;
+        }
+
+        .dashboard-course p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-course .course-fee {
+            margin-bottom: 0;
+        }
+
+        .enrollment-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .enrollment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 18px 20px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .enrollment-item h3 {
+            font-size: 16px;
+        }
+
+        .enrollment-item p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .status-label {
+            display: inline-block;
+            padding: 5px 10px;
+            color: #166534;
+            background: #dcfce7;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .dashboard-message {
+            color: #64748b;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+
+        .dashboard-message.error {
+            color: #b91c1c;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .dashboard-stats,
+            .dashboard-course-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 550px) {
+            .dashboard-header h1 {
+                font-size: 25px;
+            }
+
+            .dashboard-stats,
+            .dashboard-course-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-page {
+                padding: 30px 5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="index.html" class="logo">Learn<span>Hub.</span></a>
+
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <a href="index.html" class="btn btn-outline">Home</a>
+        <button id="logoutButton" class="btn btn-primary" type="button">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+    </div>
+</header>
+
+<main class="dashboard-page">
+
+    <section class="dashboard-header">
+        <div>
+            <h1>Welcome, <span id="dashboardStudentName">Student</span>!</h1>
+            <p>Continue your learning journey with LearnHub.</p>
+        </div>
+    </section>
+
+    <section class="dashboard-stats">
+        <article class="stat-card">
+            <i class="fa-solid fa-book-open"></i>
+            <h3 id="availableCount">—</h3>
+            <p>Available Courses</p>
+        </article>
+
+        <article class="stat-card">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h3 id="enrolledCount">—</h3>
+            <p>My Enrollments</p>
+        </article>
+
+        <article class="stat-card">
+            <i class="fa-solid fa-user"></i>
+            <h3 id="studentIdDisplay">—</h3>
+            <p>Student ID</p>
+        </article>
+    </section>
+
+    <section class="dashboard-section">
+        <h2><i class="fa-solid fa-book-open" style="color:#2563eb;"></i>
+            Available Courses
+        </h2>
+
+        <p id="coursesMessage" class="dashboard-message" role="status">
+            Loading courses...
+        </p>
+
+        <div id="dashboardCourseList" class="dashboard-course-grid"></div>
+    </section>
+
+    <section class="dashboard-section">
+        <h2><i class="fa-solid fa-graduation-cap" style="color:#2563eb;"></i>
+            My Enrolled Courses
+        </h2>
+
+        <p id="enrollmentsMessage" class="dashboard-message" role="status">
+            Loading your enrollments...
+        </p>
+
+        <div id="enrollmentList" class="enrollment-list"></div>
+    </section>
+
+    <div class="dashboard-actions">
+        <a href="index.html#courses" class="btn btn-primary">
+            Explore Homepage
+        </a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="copyright">
+        <p>© 2026 LearnHub. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    const API = "http://localhost:8080/api";
+
+    const studentId = localStorage.getItem("studentId");
+    const studentName = localStorage.getItem("studentName");
+
+    const dashboardStudentName =
+        document.getElementById("dashboardStudentName");
+
+    const availableCount = document.getElementById("availableCount");
+    const enrolledCount = document.getElementById("enrolledCount");
+    const studentIdDisplay = document.getElementById("studentIdDisplay");
+
+    const coursesMessage = document.getElementById("coursesMessage");
+    const enrollmentsMessage = document.getElementById("enrollmentsMessage");
+
+    const dashboardCourseList =
+        document.getElementById("dashboardCourseList");
+
+    const enrollmentList = document.getElementById("enrollmentList");
+
+    // Require a saved student login for this frontend page.
+    if (!studentId || !studentName) {
+        window.location.replace("student-login.html");
+    } else {
+        dashboardStudentName.textContent = studentName;
+        studentIdDisplay.textContent = studentId;
+        loadDashboard();
+    }
+
+    // Load courses and enrolled course IDs.
+    async function loadDashboard() {
+        await Promise.all([
+            loadAvailableCourses(),
+            loadMyEnrollments()
+        ]);
+    }
+
+    async function loadAvailableCourses() {
+        try {
+            const response = await fetch(`${API}/courses`);
+
+            if (!response.ok) {
+                throw new Error("Could not retrieve courses.");
+            }
+
+            const courses = await response.json();
+
+            availableCount.textContent = courses.length;
+            coursesMessage.textContent = "";
+
+            if (courses.length === 0) {
+                coursesMessage.textContent = "No courses are available yet.";
+                return;
+            }
+
+            courses.forEach((course) => {
+                const card = document.createElement("article");
+                card.className = "dashboard-course";
+
+                const icon = document.createElement("div");
+                icon.className = "course-icon";
+
+                const iconElement = document.createElement("i");
+                iconElement.className = "fa-solid fa-book";
+                icon.appendChild(iconElement);
+
+                const title = document.createElement("h3");
+                title.textContent = course.courseName || "Course";
+
+                const description = document.createElement("p");
+                description.textContent =
+                    course.description || "Explore this course.";
+
+                const fee = document.createElement("p");
+                fee.className = "course-fee";
+                fee.textContent =
+                    `₹${Number(course.fee || 0).toLocaleString("en-IN")}`;
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "btn btn-primary";
+                button.textContent = "Enroll Now";
+
+                button.addEventListener("click", () => {
+                    enrollInCourse(course.id, button);
+                });
+
+                card.append(icon, title, description, fee, button);
+                dashboardCourseList.appendChild(card);
+            });
+        } catch (error) {
+            console.error(error);
+            coursesMessage.textContent =
+                "Unable to load courses. Check that Spring Boot is running.";
+            coursesMessage.classList.add("error");
+        }
+    }
+
+    async function loadMyEnrollments() {
+        try {
+            const response = await fetch(
+                `${API}/enrollments/student/${encodeURIComponent(studentId)}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Could not retrieve your enrollments.");
+            }
+
+            const enrollments = await response.json();
+
+            enrolledCount.textContent = enrollments.length;
+            enrollmentsMessage.textContent = "";
+
+            if (enrollments.length === 0) {
+                enrollmentsMessage.textContent =
+                    "You have not enrolled in any courses yet.";
+                return;
+            }
+
+            // Fetch course details to show names rather than just IDs.
+            const coursesResponse = await fetch(`${API}/courses`);
+            const courses = coursesResponse.ok
+                ? await coursesResponse.json()
+                : [];
+
+            enrollments.forEach((enrollment) => {
+                const course = courses.find(
+                    item => Number(item.id) === Number(enrollment.courseId)
+                );
+
+                const item = document.createElement("article");
+                item.className = "enrollment-item";
+
+                const details = document.createElement("div");
+
+                const title = document.createElement("h3");
+                title.textContent = course
+                    ? course.courseName
+                    : `Course ID: ${enrollment.courseId}`;
+
+                const idText = document.createElement("p");
+                idText.textContent = `Enrollment ID: ${enrollment.id}`;
+
+                details.append(title, idText);
+
+                const status = document.createElement("span");
+                status.className = "status-label";
+                status.textContent = "Enrolled";
+
+                item.append(details, status);
+                enrollmentList.appendChild(item);
+            });
+        } catch (error) {
+            console.error(error);
+            enrollmentsMessage.textContent =
+                "Unable to load enrollments. Please try again.";
+            enrollmentsMessage.classList.add("error");
+        }
+    }
+
+    async function enrollInCourse(courseId, button) {
+        button.disabled = true;
+        button.textContent = "Enrolling...";
+
+        try {
+            const response = await fetch(`${API}/enrollments`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    studentId: Number(studentId),
+                    courseId: Number(courseId)
+                })
+            });
+
+            const result = await response.text();
+
+            if (!response.ok) {
+                throw new Error(result || "Enrollment failed.");
+            }
+
+            alert(result || "Enrollment successful!");
+            enrollmentList.innerHTML = "";
+            await loadMyEnrollments();
+
+        } catch (error) {
+            console.error(error);
+            alert(
+                error.message.includes("Failed to fetch")
+                    ? "Cannot connect to the backend. Check Spring Boot."
+                    : error.message
+            );
+        } finally {
+            button.disabled = false;
+            button.textContent = "Enroll Now";
+        }
+    }
+
+    // Clear frontend login values.
+    document.getElementById("logoutButton").addEventListener("click", () => {
+        localStorage.removeItem("studentId");
+        localStorage.removeItem("studentName");
+        localStorage.removeItem("studentEmail");
+
+        window.location.replace("student-login.html");
+    });
+</script>
+
+</body>
+</html>

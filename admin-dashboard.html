@@ -1,0 +1,419 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | LearnHub</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: #f4f7fc;
+            font-family: Arial, sans-serif;
+            color: #1e293b;
+        }
+
+        .admin-header {
+            background: #173b8f;
+            color: white;
+            padding: 20px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .admin-header h2 {
+            margin: 0;
+        }
+
+        .admin-header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        .admin-container {
+            width: 88%;
+            max-width: 1200px;
+            margin: 35px auto;
+        }
+
+        .admin-welcome {
+            margin-bottom: 25px;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px;
+        }
+
+        .admin-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(20, 40, 90, 0.08);
+            margin-bottom: 22px;
+        }
+
+        .admin-card h3 {
+            color: #173b8f;
+            margin-top: 0;
+        }
+
+        .admin-form input,
+        .admin-form textarea {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #d5ddeb;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .admin-form textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .admin-btn {
+            background: #2458c6;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .admin-btn:hover {
+            background: #173b8f;
+        }
+
+        .admin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .admin-message {
+            margin-top: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .admin-item {
+            border: 1px solid #e1e8f5;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-item h4 {
+            margin: 0 0 8px;
+            color: #173b8f;
+        }
+
+        .admin-item p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+
+        .admin-footer {
+            text-align: center;
+            padding: 22px;
+            color: #64748b;
+        }
+
+        @media (max-width: 600px) {
+            .admin-container {
+                width: 92%;
+            }
+
+            .admin-header {
+                padding: 18px 4%;
+            }
+
+            .admin-header a {
+                margin-left: 0;
+                margin-right: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="admin-header">
+    <h2><i class="fa-solid fa-graduation-cap"></i> LearnHub Admin</h2>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="admin-login.html">Admin Login</a>
+    </nav>
+</header>
+
+<main class="admin-container">
+
+    <section class="admin-welcome">
+        <h1>Admin Dashboard</h1>
+        <p>Manage students and courses from one place.</p>
+    </section>
+
+    <section class="admin-grid">
+
+        <div class="admin-card">
+            <h3><i class="fa-solid fa-users"></i> Students</h3>
+            <p>View registered student details.</p>
+            <button class="admin-btn" id="loadStudentsBtn">
+                View Students
+            </button>
+            <p id="studentMessage" class="admin-message" aria-live="polite"></p>
+            <div id="studentList" class="admin-list"></div>
+        </div>
+
+        <div class="admin-card">
+            <h3><i class="fa-solid fa-book-open"></i> Courses</h3>
+            <p>View the courses available in LearnHub.</p>
+            <button class="admin-btn" id="loadCoursesBtn">
+                View Courses
+            </button>
+            <p id="courseMessage" class="admin-message" aria-live="polite"></p>
+            <div id="courseList" class="admin-list"></div>
+        </div>
+
+    </section>
+
+    <section class="admin-card">
+        <h3><i class="fa-solid fa-circle-plus"></i> Add New Course</h3>
+
+        <form id="addCourseForm" class="admin-form">
+            <input
+                type="text"
+                id="courseName"
+                placeholder="Course Name"
+                required>
+
+            <textarea
+                id="courseDescription"
+                placeholder="Course Description"
+                required></textarea>
+
+            <input
+                type="number"
+                id="courseFee"
+                placeholder="Course Fee"
+                min="0"
+                step="0.01"
+                required>
+
+            <button type="submit" class="admin-btn" id="addCourseBtn">
+                Add Course
+            </button>
+        </form>
+
+        <p id="addCourseMessage" class="admin-message" aria-live="polite"></p>
+    </section>
+
+</main>
+
+<footer class="admin-footer">
+    © 2026 LearnHub Online Course Management System
+</footer>
+
+<script>
+    const API_URL = "http://localhost:8080/api";
+
+    const studentList = document.getElementById("studentList");
+    const courseList = document.getElementById("courseList");
+    const studentMessage = document.getElementById("studentMessage");
+    const courseMessage = document.getElementById("courseMessage");
+    const addCourseMessage = document.getElementById("addCourseMessage");
+
+    // Display errors and status messages safely.
+    function showMessage(element, message) {
+        element.textContent = message;
+    }
+
+    // Read an API response and handle unsuccessful requests.
+    async function readResponse(response) {
+        const text = await response.text();
+
+        if (!response.ok) {
+            throw new Error(text || "Request failed. Please try again.");
+        }
+
+        if (!text) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(text);
+        } catch {
+            return text;
+        }
+    }
+
+    // Load registered students.
+    
+    // Load enrolled students.
+    async function loadStudents() {
+        studentList.replaceChildren();
+        showMessage(studentMessage, "Loading enrolled students...");
+
+        try {
+            const response = await fetch(`${API_URL}/enrollments/all`);
+            const students = await readResponse(response);
+
+            if (!Array.isArray(students)) {
+                throw new Error("Unexpected student data from the server.");
+            }
+
+            if (students.length === 0) {
+                showMessage(studentMessage, "No enrolled students yet.");
+                return;
+            }
+
+            showMessage(
+                studentMessage,
+                `Total enrolled students: ${students.length}`
+            );
+
+            students.forEach(student => {
+                const card = document.createElement("div");
+                card.className = "admin-item";
+
+                const name = document.createElement("h4");
+                
+                name.textContent = "NAME: " + JSON.stringify(student.studentName);
+
+                const email = document.createElement("p");
+                email.textContent = "Email: " + student.studentEmail;
+
+                const course = document.createElement("p");
+                course.textContent = "Course: " + student.courseName;
+
+                card.append(name, email, course);
+                studentList.appendChild(card);
+            });
+
+        } catch (error) {
+            showMessage(
+                studentMessage,
+                "Could not load students: " + error.message
+            );
+        }
+    }
+
+    // Load all available courses.
+    async function loadCourses() {
+        courseList.replaceChildren();
+        showMessage(courseMessage, "Loading courses...");
+
+        try {
+            const response = await fetch(`${API_URL}/courses`);
+            const courses = await readResponse(response);
+
+            if (!Array.isArray(courses)) {
+                throw new Error("Unexpected course data from the server.");
+            }
+
+            if (courses.length === 0) {
+                showMessage(courseMessage, "No courses available.");
+                return;
+            }
+
+            showMessage(courseMessage, `Total courses: ${courses.length}`);
+
+            courses.forEach(course => {
+                const card = document.createElement("div");
+                card.className = "admin-item";
+
+                const name = document.createElement("h4");
+                name.textContent = course.courseName || "Course";
+
+                const description = document.createElement("p");
+                description.textContent =
+                    course.description || "No description available.";
+
+                const fee = document.createElement("p");
+                fee.textContent = "Fee: ₹" + (course.fee ?? "Not available");
+
+                card.append(name, description, fee);
+                courseList.appendChild(card);
+            });
+
+        } catch (error) {
+            showMessage(
+                courseMessage,
+                "Could not load courses: " + error.message
+            );
+        }
+    }
+
+    // Add a course through the existing Spring Boot API.
+    document.getElementById("addCourseForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const button = document.getElementById("addCourseBtn");
+        button.disabled = true;
+        showMessage(addCourseMessage, "Adding course...");
+
+        const course = {
+            courseName: document.getElementById("courseName").value.trim(),
+            description: document.getElementById("courseDescription").value.trim(),
+            fee: Number(document.getElementById("courseFee").value)
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/courses`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(course)
+            });
+
+            const result = await readResponse(response);
+
+            showMessage(
+                addCourseMessage,
+                typeof result === "string"
+                    ? result
+                    : "Course added successfully!"
+            );
+
+            this.reset();
+            await loadCourses();
+
+        } catch (error) {
+            showMessage(
+                addCourseMessage,
+                "Could not add course: " + error.message
+            );
+        } finally {
+            button.disabled = false;
+        }
+    });
+
+    document.getElementById("loadStudentsBtn")
+        .addEventListener("click", loadStudents);
+
+    document.getElementById("loadCoursesBtn")
+        .addEventListener("click", loadCourses);
+</script>
+
+</body>
+</html>

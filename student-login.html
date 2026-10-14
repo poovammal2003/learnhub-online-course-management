@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login | LearnHub</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        .login-page {
+            min-height: calc(100vh - 76px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 45px 20px;
+            background: #f1f7ff;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 38px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            box-shadow: 0 15px 45px rgba(37, 99, 235, 0.10);
+        }
+
+        .login-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: #dbeafe;
+            color: #2563eb;
+            font-size: 27px;
+        }
+
+        .login-card h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+        .login-submit {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .login-message {
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .login-message.error {
+            color: #b91c1c;
+        }
+
+        .login-message.success {
+            color: #15803d;
+        }
+
+        .login-bottom {
+            margin-top: 23px;
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .login-bottom a {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 26px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="index.html" class="logo">
+            Learn<span>Hub.</span>
+        </a>
+
+        <a href="index.html" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Home
+        </a>
+    </header>
+
+    <main class="login-page">
+        <section class="login-card">
+
+            <div class="login-icon">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+
+            <h1>Student Login</h1>
+            <p class="login-subtitle">
+                Welcome back! Sign in to continue learning.
+            </p>
+
+            <form id="studentLoginForm">
+
+                <div class="form-group">
+                    <label for="studentEmail">Email Address</label>
+                    <input
+                        type="email"
+                        id="studentEmail"
+                        name="studentEmail"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentPassword">Password</label>
+                    <input
+                        type="password"
+                        id="studentPassword"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-submit"
+                        id="loginButton">
+                    Login <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <p id="loginMessage" class="login-message"
+                   role="status" aria-live="polite"></p>
+
+            </form>
+
+            <div class="login-bottom">
+                Don't have an account?
+                <a href="student-register.html">Register here</a>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        const loginForm = document.getElementById("studentLoginForm");
+        const loginButton = document.getElementById("loginButton");
+        const loginMessage = document.getElementById("loginMessage");
+
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const studentEmail =
+                document.getElementById("studentEmail").value.trim();
+
+            const password =
+                document.getElementById("studentPassword").value;
+
+            loginButton.disabled = true;
+            loginButton.textContent = "Logging in...";
+            loginMessage.textContent = "";
+            loginMessage.className = "login-message";
+
+            try {
+                const response = await fetch(
+                    "http://localhost:8080/api/students/login",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            studentEmail: studentEmail,
+                            password: password
+                        })
+                    }
+                );
+
+                const responseText = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(
+                        responseText || "Invalid email or password."
+                    );
+                }
+
+                let student;
+
+                try {
+                    student = JSON.parse(responseText);
+                } catch {
+                    throw new Error("Unexpected response from the server.");
+                }
+
+                if (!student.studentId || !student.studentName) {
+                    throw new Error("Student details were not returned by the server.");
+                }
+
+                localStorage.setItem("studentId", student.studentId);
+                localStorage.setItem("studentName", student.studentName);
+
+                if (student.studentEmail) {
+                    localStorage.setItem("studentEmail", student.studentEmail);
+                }
+
+                loginMessage.textContent = "Login successful! Redirecting...";
+                loginMessage.classList.add("success");
+
+                window.location.href = "student-dashboard.html";
+
+            } catch (error) {
+                console.error("Student login error:", error);
+
+                loginMessage.textContent =
+                    error.message.includes("Failed to fetch")
+                        ? "Cannot connect to the server. Please check Spring Boot."
+                        : error.message;
+
+                loginMessage.classList.add("error");
+
+            } finally {
+                loginButton.disabled = false;
+                loginButton.innerHTML =
+                    'Login <i class="fa-solid fa-arrow-right"></i>';
+            }
+        });
+    </script>
+
+</body>
+</html>
